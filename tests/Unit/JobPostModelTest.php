@@ -3,29 +3,14 @@
 namespace Tests\Unit;
 
 use App\Models\JobPost;
+use Database\Seeders\JobPostSeeder;
 use Illuminate\Foundation\Testing\RefreshDatabase;
 use Illuminate\Foundation\Testing\DatabaseMigrations;
-// use PHPUnit\Framework\TestCase;
 use Tests\TestCase;
 
 class JobPostModelTest extends TestCase
 {
-    // use RefreshDatabase;
     use RefreshDatabase, DatabaseMigrations;
-
-    // public function setUp(): void
-    // {
-    //     parent::setUp();
-    //     // $this->user = \App\User::first();
-    // }
-
-    /**
-     * A basic unit test example.
-     */
-    public function test_example(): void
-    {
-        $this->assertTrue(true);
-    }
 
     public function test_job_post_creation(): void
     {
@@ -43,5 +28,12 @@ class JobPostModelTest extends TestCase
         $this->assertDatabaseHas('job_posts', [
             'title' => 'mytitle'
         ]);
+    }
+
+    public function test_job_post_seed(): void
+    {
+        $this->assertDatabaseCount('job_posts', 0);
+        $this->seed(JobPostSeeder::class);
+        $this->assertDatabaseCount('job_posts', 7);
     }
 }
