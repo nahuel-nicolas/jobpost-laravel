@@ -16,3 +16,6 @@ use Illuminate\Support\Facades\Route;
 Route::get('/', function () {
     return view('welcome');
 });
+
+// Show Create Form
+Route::get('/listings/create', [ListingController::class, 'create'])->middleware('auth');
