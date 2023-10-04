@@ -3,6 +3,7 @@
 namespace Tests\Unit;
 
 use App\Models\JobPost;
+use App\Models\User;
 use Database\Seeders\JobPostSeeder;
 use Illuminate\Foundation\Testing\RefreshDatabase;
 use Illuminate\Foundation\Testing\DatabaseMigrations;
@@ -14,6 +15,7 @@ class JobPostModelTest extends TestCase
 
     public function test_job_post_creation(): void
     {
+        $user = User::factory()->create();
         $jobpost = JobPost::create([
             'title' => 'mytitle',
             'company' => 'mycompany',
@@ -21,7 +23,8 @@ class JobPostModelTest extends TestCase
             'website' => 'http://google.com',
             'email' => 'myemail@gmail.com',
             'description' => 'mydescription',
-            'tags' => 'react, node, django, laravel'
+            'tags' => 'react, node, django, laravel',
+            'user_id' => $user->id,
         ]);
 
         $this->assertModelExists($jobpost);

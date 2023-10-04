@@ -17,7 +17,8 @@ class JobPost extends Model
         'email',
         'description',
         'tags',
-        'logo'
+        'logo',
+        'user_id'
     ];
 
 }
