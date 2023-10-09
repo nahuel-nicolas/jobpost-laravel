@@ -24,6 +24,14 @@ class JobPostSeeder extends Seeder
             'email' => 'user2@email.com',
             'password' => 'user2password'
         ]);
+        JobPost::factory()->create([
+            'user_id' => $user1->id,
+            'title' => 'Created by seed, belongs to user1'
+        ]);
+        JobPost::factory()->create([
+            'user_id' => $user2->id,
+            'title' => 'Created by seed, belongs to user2'
+        ]);
         JobPost::factory(3)->create([
             'user_id' => $user1->id
         ]);

@@ -37,6 +37,6 @@ class JobPostModelTest extends TestCase
     {
         $this->assertDatabaseCount('job_posts', 0);
         $this->seed(JobPostSeeder::class);
-        $this->assertDatabaseCount('job_posts', 7);
+        $this->assertDatabaseCount('job_posts', 9);
     }
 }
