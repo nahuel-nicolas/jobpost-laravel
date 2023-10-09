@@ -10,6 +10,8 @@ use Database\Seeders\UserSeeder;
 use Illuminate\Support\Facades\Log;
 use App\Models\JobPost;
 use App\Models\User;
+use Illuminate\Http\UploadedFile;
+use Illuminate\Support\Facades\Storage;
 
 class HttpTest extends TestCase
 {
@@ -166,5 +168,42 @@ class HttpTest extends TestCase
             'user_id' => $user->id,
         ]);
         $response->assertRedirect('/');
+    }
+
+    public function test_store_url_with_auth_and_logo(): void
+    {
+        $this->seed(JobPostSeeder::class);
+        $user = User::first();
+        $file = UploadedFile::fake()->image('logo1.jpg');
+        $response = $this->actingAs($user)->postJson("/jobposts", [
+            'title' => 'mytitle',
+            'company' => 'mycompany', 
+            'location' => 'mylocation',
+            'website' => 'http://google.com',
+            'email' => 'myemail@gmail.com',
+            'description' => 'mydescription',
+            'tags' => 'react, node, django, laravel',
+            'user_id' => $user->id,
+            'logo' => $file,
+        ]);
+        $response->assertRedirect('/');
+    }
+
+    public function test_edit_url_with_auth_and_logo(): void
+    {
+        $this->seed(JobPostSeeder::class);
+        $jobpost = JobPost::first();
+        $new_title = 'somerandomtitle3321';
+        $this->assertDatabaseMissing('job_posts', [
+            'title' => $new_title
+        ]);
+        $data = $jobpost->toArray();
+        $data['title'] = $new_title;
+        $data['logo'] = UploadedFile::fake()->image('logo2.jpg');
+        $response = $this->actingAs($jobpost->user)->putJson("/jobposts/{$jobpost->id}", $data);
+        $response->assertRedirect('/');
+        $this->assertDatabaseHas('job_posts', [
+            'title' => $new_title
+        ]);
     }
 }
