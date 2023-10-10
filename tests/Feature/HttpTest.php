@@ -206,4 +206,14 @@ class HttpTest extends TestCase
             'title' => $new_title
         ]);
     }
+
+    public function test_api_users_get(): void
+    {
+        $this->seed(JobPostSeeder::class);
+        $users = User::all()->toArray();
+        $response = $this->get("/api/users");
+        $response->assertOk();
+        $data = $response->getOriginalContent();
+        $this->assertEquals($users, $data);
+    }
 }

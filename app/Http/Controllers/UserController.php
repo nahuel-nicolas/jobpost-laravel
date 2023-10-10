@@ -8,6 +8,12 @@ use Illuminate\Validation\Rule;
 
 class UserController extends Controller
 {
+    // Show last 10 users
+    public function index(Request $request) {
+        $users = User::latest()->take(10)->get()->toArray();
+        return response()->json($users);
+    }
+
     // Show Register/Create Form
     public function create() {
         return view('users.register');
