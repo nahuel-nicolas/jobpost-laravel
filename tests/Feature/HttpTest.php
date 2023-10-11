@@ -216,4 +216,30 @@ class HttpTest extends TestCase
         $data = $response->getOriginalContent();
         $this->assertEquals($users, $data);
     }
+
+    public function test_api_private_users_get(): void
+    {
+        $this->seed(JobPostSeeder::class);
+        $users = User::all()->toArray();
+        $userData = [
+            'name' => 'user1',
+            'email' => 'user1@email.com',
+            'password' => 'user1password'
+        ];
+        $user = User::where('email', $userData['email'])->first();
+        $response = $this->postJson("/api/login", [
+            'email' => $userData['email'],
+            'password' => $userData['password']
+        ]);
+        $response->assertCreated();
+        $responseData = $response->getOriginalContent();
+        $token = $responseData['token'];
+
+        $response = $this->withHeaders([
+            'Authorization' => "Bearer {$token}"
+        ])->get("/api/private/users");
+        $response->assertOk();
+        $data = $response->getOriginalContent();
+        $this->assertEquals($users, $data);
+    }
 }

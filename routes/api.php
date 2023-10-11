@@ -4,6 +4,7 @@ use App\Models\JobPost;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Route;
 use App\Http\Controllers\UserController;
+use App\Http\Controllers\AuthController;
 
 /*
 |--------------------------------------------------------------------------
@@ -24,7 +25,13 @@ Route::get('/example1', function (Request $request) {
     ]);
 });
 
-Route::get('/users', [UserController::class, 'index']);
+Route::post('/login', [AuthController::class, 'login'])->name('sanctumlogin')->middleware('guest');
+
+Route::get('/example2', function (Request $request) {
+    return response()->json(['hello', 'world']);
+})->middleware('auth:sanctum');;
+
+// Route::get('/users', [UserController::class, 'index']);
 
 // Route::prefix('admin')->group(function () {
 //     Route::get('/users', function () {
@@ -44,6 +51,12 @@ Route::prefix('jobpost')->group(function () {
         $posts = $posts->take($max)->get()->toArray();
         return response()->json($posts);
     });
+});
+
+Route::get('/users', [UserController::class, 'index']);
+// Protected routes
+Route::group(['middleware' => ['auth:sanctum']], function () {
+    Route::get('/private/users', [UserController::class, 'index']);
 });
 
 Route::middleware('auth:sanctum')->get('/user', function (Request $request) {
