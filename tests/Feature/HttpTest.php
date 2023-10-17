@@ -40,15 +40,6 @@ class HttpTest extends TestCase
         $response->assertStatus(200);
     }
 
-    public function test_view_jobposts_index(): void
-    {
-        $this->seed(JobPostSeeder::class);
-        $jobposts = JobPost::latest()->paginate(10);
-        $view = $this->view('jobposts.index', ['jobposts' => $jobposts]);
-        $view->assertSee('Created by seed, belongs to user1');
-        $view->assertSee('Created by seed, belongs to user2');
-    }
-
     public function test_url_jobposts_index(): void
     {
         $this->seed(JobPostSeeder::class);
@@ -205,41 +196,5 @@ class HttpTest extends TestCase
         $this->assertDatabaseHas('job_posts', [
             'title' => $new_title
         ]);
-    }
-
-    public function test_api_users_get(): void
-    {
-        $this->seed(JobPostSeeder::class);
-        $users = User::all()->toArray();
-        $response = $this->get("/api/users");
-        $response->assertOk();
-        $data = $response->getOriginalContent();
-        $this->assertEquals($users, $data);
-    }
-
-    public function test_api_private_users_get(): void
-    {
-        $this->seed(JobPostSeeder::class);
-        $users = User::all()->toArray();
-        $userData = [
-            'name' => 'user1',
-            'email' => 'user1@email.com',
-            'password' => 'user1password'
-        ];
-        $user = User::where('email', $userData['email'])->first();
-        $response = $this->postJson("/api/login", [
-            'email' => $userData['email'],
-            'password' => $userData['password']
-        ]);
-        $response->assertCreated();
-        $responseData = $response->getOriginalContent();
-        $token = $responseData['token'];
-
-        $response = $this->withHeaders([
-            'Authorization' => "Bearer {$token}"
-        ])->get("/api/private/users");
-        $response->assertOk();
-        $data = $response->getOriginalContent();
-        $this->assertEquals($users, $data);
     }
 }

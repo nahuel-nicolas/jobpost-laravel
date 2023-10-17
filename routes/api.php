@@ -5,6 +5,7 @@ use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Route;
 use App\Http\Controllers\UserController;
 use App\Http\Controllers\AuthController;
+use App\Http\Controllers\JobPostController;
 
 /*
 |--------------------------------------------------------------------------
@@ -17,29 +18,11 @@ use App\Http\Controllers\AuthController;
 |
 */
 
-Route::get('/example1', function (Request $request) {
-    return response()->json([
-        'posts' => [
-            'title' => 'example1',
-        ]
-    ]);
-});
-
 Route::post('/login', [AuthController::class, 'login'])->name('sanctumlogin')->middleware('guest');
 
-Route::get('/example2', function (Request $request) {
-    return response()->json(['hello', 'world']);
-})->middleware('auth:sanctum');;
+Route::get('/users', [UserController::class, 'index']);
 
-// Route::get('/users', [UserController::class, 'index']);
-
-// Route::prefix('admin')->group(function () {
-//     Route::get('/users', function () {
-//         // Matches The "/admin/users" URL
-//     });
-// });
-
-Route::prefix('jobpost')->group(function () {
+Route::prefix('jobposts')->group(function () {
     Route::get('/', function (Request $request) {
         $posts = JobPost::latest()->take(7)->get()->toArray();
         return response()->json($posts);
@@ -53,10 +36,15 @@ Route::prefix('jobpost')->group(function () {
     });
 });
 
-Route::get('/users', [UserController::class, 'index']);
 // Protected routes
 Route::group(['middleware' => ['auth:sanctum']], function () {
     Route::get('/private/users', [UserController::class, 'index']);
+
+    Route::prefix('jobposts')->group(function () {
+        Route::post('/', [JobPostController::class, 'store']);
+        Route::put('/{jobpost}', [JobPostController::class, 'update']);
+        Route::delete('/{jobpost}', [JobPostController::class, 'destroy']);
+    });
 });
 
 Route::middleware('auth:sanctum')->get('/user', function (Request $request) {
